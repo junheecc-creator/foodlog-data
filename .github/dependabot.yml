@@ -1,0 +1,8 @@
+# 워크플로의 액션(SHA 고정)을 주 1회 PR 로 올려 준다. 합치기 전에 diff 의 SHA 와 버전 주석을 눈으로 확인.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
