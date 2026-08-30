@@ -1,0 +1,51 @@
+# 매주 월요일 — 워크플로 위생 점검. 이 저장소는 코드가 없고 JSON 뿐이라 의존성 검사 대신
+#   1) 모든 `uses:` 가 40자 커밋 SHA 로 고정돼 있나  2) SECRETS.md 의 토큰 발급일 기준 60일이 지났나(90일 만료 30일 전) 를 본다.
+# CodeQL 은 코드가 있는 CostApp 쪽에서 켠다(CostApp/docs/계획/자동갱신-보안.md).
+name: security
+
+on:
+  schedule:
+    - cron: '0 22 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hygiene:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: uses 가 SHA 고정인지
+        run: |
+          bad=$(grep -rhoE 'uses:\s*\S+' .github/workflows | grep -vE '@[0-9a-f]{40}$' || true)
+          if [ -n "$bad" ]; then echo "SHA 고정 아님:"; echo "$bad"; exit 1; fi
+          echo "모든 uses 가 SHA 고정"
+
+      - name: Secrets 만료 예고 (SECRETS.md 의 발급일)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          # SECRETS.md 표에서 "발급일 YYYY-MM-DD" 가 있는 줄을 읽어 60일 지난 것을 알린다
+          today=$(date +%s); warn=""
+          while IFS= read -r line; do
+            name=$(echo "$line" | awk -F'|' '{gsub(/[ `]/,"",$2); print $2}')
+            d=$(echo "$line" | grep -oE '발급일 [0-9]{4}-[0-9]{2}-[0-9]{2}' | cut -d' ' -f2)
+            [ -z "$d" ] && continue
+            age=$(( (today - $(date -d "$d" +%s)) / 86400 ))
+            echo "$name: 발급 $d ($age일 전)"
+            [ "$age" -ge 60 ] && warn="$warn $name($age일)"
+          done < <(grep -E '^\| .*발급일 [0-9]{4}' SECRETS.md || true)
+          if [ -n "$warn" ]; then
+            msg="[foodlog-data] Secrets 교체 예고(60일 경과):$warn — SECRETS.md 절차대로 재발급"
+            echo "$msg"
+            if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
+              curl -sS -o /dev/null -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+                --data-urlencode "chat_id=$TELEGRAM_CHAT_ID" --data-urlencode "text=$msg" || true
+            fi
+          fi
