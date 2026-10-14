@@ -1,6 +1,6 @@
 {
   "version": "2026-10-14",
-  "updatedAt": "2026-10-14T20:35:29.171Z",
+  "updatedAt": "2026-10-14T21:35:31.325Z",
   "files": {
     "market-daily.json": {
       "bytes": 239700,
@@ -19,8 +19,8 @@
       "sha1": "c55ba5f18b60cd8a3d62107a5aee3f60d845f2d1"
     },
     "wipan-season.json": {
-      "bytes": 38285,
-      "sha1": "ee6ca631ab645e6182366972c1ae1e979fe0d025"
+      "bytes": 63433,
+      "sha1": "8e7e9f866a0bb0488a3bede33c85558a9e767bb1"
     },
     "fish-markets.json": {
       "bytes": 129452,
