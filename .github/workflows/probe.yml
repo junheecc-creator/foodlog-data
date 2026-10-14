@@ -1,28 +1,22 @@
-# 접속 시험 (W-003 1-1 · 2026-10-15) — GitHub 서버에서 공공데이터 API 에 닿는지, 등록된 열쇠가 먹는지 본다. 자료는 안 받는다.
-# 열쇠 값은 출력에 절대 안 나온다(마스킹). 끝나면 지운다(진단용 임시 파일).
+# 접속 시험 (W-003 1-1 · 2026-10-15) — GitHub 서버에서 발행기와 같은 호출(999줄)이 되는지 본다. 열쇠 값은 마스킹. 끝나면 지운다.
 name: probe
 on: workflow_dispatch
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 6
     steps:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: 20 }
-      - name: curl (열쇠 없이 · 접속만)
-        run: curl -sS -o /dev/null -m 20 -w 'curl 무열쇠 → HTTP %{http_code} · %{time_total}s\n' https://apis.data.go.kr/B552845/katSale/trades
-      - name: curl (열쇠 포함)
-        env: { DATAGO_KEY: "${{ secrets.DATAGO_KEY }}" }
-        run: |
-          echo "열쇠 길이 = ${#DATAGO_KEY} 글자"
-          curl -sS -m 20 -w '\ncurl 열쇠 → HTTP %{http_code} · %{time_total}s\n' \
-            "https://apis.data.go.kr/B552845/katSale/trades?serviceKey=${DATAGO_KEY}&returnType=JSON&numOfRows=1&pageNo=1&cond[whsl_mrkt_cd::EQ]=110001&cond[trd_clcln_ymd::EQ]=2026-10-13" \
-            | sed "s/${DATAGO_KEY}/***/g" | cut -c1-300
-      - name: node fetch (발행기와 같은 방식)
+      - name: node fetch 크기별
         env: { DATAGO_KEY: "${{ secrets.DATAGO_KEY }}" }
         run: |
           node -e '
-            const K=process.env.DATAGO_KEY; const t0=Date.now();
-            const u=`https://apis.data.go.kr/B552845/katSale/trades?serviceKey=${K}&returnType=JSON&numOfRows=1&pageNo=1&cond[whsl_mrkt_cd::EQ]=110001&cond[trd_clcln_ymd::EQ]=2026-10-13`;
-            fetch(u).then(async r=>{const t=(await r.text()).split(K).join("***");console.log("node fetch → HTTP",r.status,"·",((Date.now()-t0)/1000)+"s ·",t.slice(0,300))})
-              .catch(e=>console.log("node fetch 실패 →",String(e.cause||e).slice(0,300),"·",((Date.now()-t0)/1000)+"s"))'
+            const K=process.env.DATAGO_KEY;
+            const url=(n,p)=>`https://apis.data.go.kr/B552845/katSale/trades?serviceKey=${K}&returnType=JSON&numOfRows=${n}&pageNo=${p}&cond[whsl_mrkt_cd::EQ]=110001&cond[trd_clcln_ymd::EQ]=2026-10-13`;
+            (async()=>{ for (const [n,p] of [[1,1],[100,1],[300,1],[999,1],[999,2]]) {
+              const t0=Date.now();
+              try { const r=await fetch(url(n,p)); const t=await r.text(); let ok=false,cnt="-"; try{const j=JSON.parse(t); ok=true; cnt=(j.response.body.items.item||[]).length}catch{}
+                console.log(`rows=${n} page=${p} → HTTP ${r.status} · ${((Date.now()-t0)/1000).toFixed(1)}s · ${t.length}자 · JSON ${ok?"OK":"깨짐"} · item ${cnt} · 머리: ${t.split(K).join("***").slice(0,80).replace(/\s+/g," ")}`) }
+              catch(e){ console.log(`rows=${n} page=${p} → 실패 ${((Date.now()-t0)/1000).toFixed(1)}s · ${String(e.cause||e).slice(0,200)}`) }
+            } })()'
