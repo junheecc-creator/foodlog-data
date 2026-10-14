@@ -1,6 +1,6 @@
 {
   "version": "2026-10-14",
-  "updatedAt": "2026-10-14T22:48:18.418Z",
+  "updatedAt": "2026-10-14T23:11:04.004Z",
   "files": {
     "market-daily.json": {
       "bytes": 239700,
@@ -27,8 +27,8 @@
       "sha1": "417b93d1ed4794f298716423df6fe2f2ffae737d"
     },
     "dict-monthly.json": {
-      "bytes": 16769,
-      "sha1": "3c13be49b9a52a1e6cc2187c967041981392ee04"
+      "bytes": 20255,
+      "sha1": "4c19f230c85f6fa0e6506dc8fbe36ee86db947d0"
     }
   }
 }
