@@ -22,7 +22,8 @@ jobs:
 
       - name: uses 가 SHA 고정인지
         run: |
-          bad=$(grep -rhoE 'uses:\s*\S+' .github/workflows | grep -vE '@[0-9a-f]{40}$' || true)
+          # 줄 머리의 진짜 `uses:` 키만 본다 — 전엔 주석·이 검사식 자신의 글자까지 걸려 매주 실패했다(2026-09-29~10-13 · W-003 1-7 수리)
+          bad=$(grep -rhoE '^\s*-?\s*uses:\s*\S+' .github/workflows | sed -E 's/^\s*-?\s*//' | grep -vE '@[0-9a-f]{40}$' || true)
           if [ -n "$bad" ]; then echo "SHA 고정 아님:"; echo "$bad"; exit 1; fi
           echo "모든 uses 가 SHA 고정"
 
