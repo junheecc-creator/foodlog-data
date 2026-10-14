@@ -1,15 +1,28 @@
-# 접속 시험 (W-003 1-1 · 2026-10-15) — GitHub 서버에서 공공데이터 API 에 닿는지만 본다. 열쇠 안 씀 · 자료 안 받음.
-# 끝나면 지운다(진단용 임시 파일).
+# 접속 시험 (W-003 1-1 · 2026-10-15) — GitHub 서버에서 공공데이터 API 에 닿는지, 등록된 열쇠가 먹는지 본다. 자료는 안 받는다.
+# 열쇠 값은 출력에 절대 안 나온다(마스킹). 끝나면 지운다(진단용 임시 파일).
 name: probe
 on: workflow_dispatch
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 4
     steps:
-      - name: 접속 시험
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: { node-version: 20 }
+      - name: curl (열쇠 없이 · 접속만)
+        run: curl -sS -o /dev/null -m 20 -w 'curl 무열쇠 → HTTP %{http_code} · %{time_total}s\n' https://apis.data.go.kr/B552845/katSale/trades
+      - name: curl (열쇠 포함)
+        env: { DATAGO_KEY: "${{ secrets.DATAGO_KEY }}" }
         run: |
-          for u in https://apis.data.go.kr/B552845/katSale/trades https://www.data.go.kr https://www.google.com; do
-            printf '%s → ' "$u"
-            curl -sS -o /dev/null -m 20 -w 'HTTP %{http_code} · %{time_total}s\n' "$u" || echo "실패(시간초과/접속불가)"
-          done
+          echo "열쇠 길이 = ${#DATAGO_KEY} 글자"
+          curl -sS -m 20 -w '\ncurl 열쇠 → HTTP %{http_code} · %{time_total}s\n' \
+            "https://apis.data.go.kr/B552845/katSale/trades?serviceKey=${DATAGO_KEY}&returnType=JSON&numOfRows=1&pageNo=1&cond[whsl_mrkt_cd::EQ]=110001&cond[trd_clcln_ymd::EQ]=2026-10-13" \
+            | sed "s/${DATAGO_KEY}/***/g" | cut -c1-300
+      - name: node fetch (발행기와 같은 방식)
+        env: { DATAGO_KEY: "${{ secrets.DATAGO_KEY }}" }
+        run: |
+          node -e '
+            const K=process.env.DATAGO_KEY; const t0=Date.now();
+            const u=`https://apis.data.go.kr/B552845/katSale/trades?serviceKey=${K}&returnType=JSON&numOfRows=1&pageNo=1&cond[whsl_mrkt_cd::EQ]=110001&cond[trd_clcln_ymd::EQ]=2026-10-13`;
+            fetch(u).then(async r=>{const t=(await r.text()).split(K).join("***");console.log("node fetch → HTTP",r.status,"·",((Date.now()-t0)/1000)+"s ·",t.slice(0,300))})
+              .catch(e=>console.log("node fetch 실패 →",String(e.cause||e).slice(0,300),"·",((Date.now()-t0)/1000)+"s"))'
