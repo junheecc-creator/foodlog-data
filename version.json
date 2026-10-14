@@ -1,0 +1,34 @@
+{
+  "version": "2026-10-14",
+  "updatedAt": "2026-10-14T20:35:29.171Z",
+  "files": {
+    "market-daily.json": {
+      "bytes": 239700,
+      "sha1": "8ec8ca381d9009a6ca8b7a940e40cccf84edb2b4"
+    },
+    "market-busan.json": {
+      "bytes": 3221,
+      "sha1": "546b920b6b8c34d55399a8c3f20c60fae34ee258"
+    },
+    "seasonal.json": {
+      "bytes": 205409,
+      "sha1": "6411c55be23161ce10c3d9a06119e507ada1f02e"
+    },
+    "wipan-daily.json": {
+      "bytes": 264416,
+      "sha1": "c55ba5f18b60cd8a3d62107a5aee3f60d845f2d1"
+    },
+    "wipan-season.json": {
+      "bytes": 38285,
+      "sha1": "ee6ca631ab645e6182366972c1ae1e979fe0d025"
+    },
+    "fish-markets.json": {
+      "bytes": 129452,
+      "sha1": "417b93d1ed4794f298716423df6fe2f2ffae737d"
+    },
+    "dict-monthly.json": {
+      "bytes": 13291,
+      "sha1": "698de7bc78a2e12c614f39f3ca5ad5e8836f08bf"
+    }
+  }
+}
