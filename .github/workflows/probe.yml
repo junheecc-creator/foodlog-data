@@ -1,0 +1,15 @@
+# 접속 시험 (W-003 1-1 · 2026-10-15) — GitHub 서버에서 공공데이터 API 에 닿는지만 본다. 열쇠 안 씀 · 자료 안 받음.
+# 끝나면 지운다(진단용 임시 파일).
+name: probe
+on: workflow_dispatch
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: 접속 시험
+        run: |
+          for u in https://apis.data.go.kr/B552845/katSale/trades https://www.data.go.kr https://www.google.com; do
+            printf '%s → ' "$u"
+            curl -sS -o /dev/null -m 20 -w 'HTTP %{http_code} · %{time_total}s\n' "$u" || echo "실패(시간초과/접속불가)"
+          done
