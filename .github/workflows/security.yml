@@ -59,7 +59,7 @@ jobs:
           [ -f publish-log.tsv ] || { echo "기록 파일 아직 없음"; exit 0; }
           last=$(tail -1 publish-log.tsv | cut -f1 | cut -c1-10)
           age=$(( ($(date +%s) - $(date -d "$last" +%s)) / 86400 ))
-          fails=$(tail -7 publish-log.tsv | cut -f2 | grep -vc '^success$' || true)
+          fails=$(tail -n +2 publish-log.tsv | tail -7 | cut -f2 | grep -vc '^success$' || true)
           echo "마지막 기록 $last ($age일 전) · 최근 7건 중 성공 아님 $fails건"
           msg=""
           [ "$age" -ge 2 ] && msg="[foodlog-data] 매일 발행 기록이 ${age}일째 없음(마지막 $last) — 예약 실행이 멈췄을 수 있음"
