@@ -4,7 +4,7 @@
 
 | 이름 | 무엇 | 권한 범위 | 교체 주기 | 발급일 |
 |---|---|---|---|---|
-| `DATAGO_KEY` | 공공데이터포털 인증키(katSale) | 그 API 활용신청 계정 | 개발계정 2년(CostApp `docs/계획/API-열쇠-관리.md`) | 발급일 2026-08-29 |
+| `DATAGO_KEY` | 공공데이터포털 인증키(katSale) | 그 API 활용신청 계정 | 개발계정 2년(CostApp `docs/API-사용지도.md` 0절(대장 · 2026-10-15 합침)) | 발급일 2026-08-29 |
 | `COSTAPP_READ_TOKEN` | foodlog(CostApp) 비공개 저장소를 읽는 fine-grained PAT | **foodlog 저장소만 · Contents: Read-only** | **90일** | 발급일 2026-10-15 (재발급 · 처음 08-29 것은 이름 오타 `COSTAPP_READ_TOKE`로 등록돼 한 번도 안 쓰였다 → 삭제) |
 | `TELEGRAM_BOT_TOKEN` | 알림 봇 토큰 | 봇 하나 | 유출 시 즉시 | 발급일 2026-08-29 |
 | `TELEGRAM_CHAT_ID` | 알림 받을 채팅 ID | 비밀은 아니지만 Secrets 에 둔다 | — | 발급일 2026-08-29 |
