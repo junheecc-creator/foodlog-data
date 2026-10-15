@@ -74,3 +74,17 @@ jobs:
             curl -sS -o /dev/null -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
               --data-urlencode "chat_id=$TELEGRAM_CHAT_ID" --data-urlencode "text=$msg" || true
           fi
+
+      - name: 발행 기록 한 줄 (성공·실패·취소 모두 · W-021 O-6)
+        if: always()
+        run: |
+          # publish-log.tsv = 날짜시각(KST) · 결과 · 발행기 요약 한 줄 · 실행 주소. 주간 security 작업이 마지막 줄 날짜로 "멈춤"을 알린다.
+          line=$(printf '%s\t%s\t%s\t%s' "$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M')" "${{ job.status }}" "$(head -1 costapp/publish-summary.txt 2>/dev/null || echo 요약없음)" "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID")
+          echo "$line"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          [ -f publish-log.tsv ] || printf '시각(KST)\t결과\t요약\t실행\n' > publish-log.tsv
+          echo "$line" >> publish-log.tsv
+          git add publish-log.tsv
+          git commit -m "log $(TZ=Asia/Seoul date +%F) ${{ job.status }}" || true
+          for i in 1 2 3; do git pull --rebase -q origin main && git push -q origin main && break; sleep 5; done || true

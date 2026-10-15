@@ -50,3 +50,24 @@ jobs:
                 --data-urlencode "chat_id=$TELEGRAM_CHAT_ID" --data-urlencode "text=$msg" || true
             fi
           fi
+
+      - name: 매일 발행이 멈췄나 (publish-log.tsv 마지막 줄 · W-021 O-6)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          [ -f publish-log.tsv ] || { echo "기록 파일 아직 없음"; exit 0; }
+          last=$(tail -1 publish-log.tsv | cut -f1 | cut -c1-10)
+          age=$(( ($(date +%s) - $(date -d "$last" +%s)) / 86400 ))
+          fails=$(tail -7 publish-log.tsv | cut -f2 | grep -vc '^success$' || true)
+          echo "마지막 기록 $last ($age일 전) · 최근 7건 중 성공 아님 $fails건"
+          msg=""
+          [ "$age" -ge 2 ] && msg="[foodlog-data] 매일 발행 기록이 ${age}일째 없음(마지막 $last) — 예약 실행이 멈췄을 수 있음"
+          [ "$fails" -ge 3 ] && msg="$msg [foodlog-data] 최근 7번 중 ${fails}번 실패/취소 — publish-log.tsv 확인"
+          if [ -n "$msg" ]; then
+            echo "$msg"
+            if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
+              curl -sS -o /dev/null -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+                --data-urlencode "chat_id=$TELEGRAM_CHAT_ID" --data-urlencode "text=$msg" || true
+            fi
+          fi
