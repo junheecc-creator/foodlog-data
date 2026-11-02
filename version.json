@@ -1,10 +1,10 @@
 {
-  "version": "2026-10-31",
-  "updatedAt": "2026-10-31T23:57:49.904Z",
+  "version": "2026-11-02",
+  "updatedAt": "2026-11-02T00:21:32.979Z",
   "files": {
     "market-daily.json": {
-      "bytes": 239305,
-      "sha1": "d4e070343f61dd99108ff9ac4ea25206c0c26082"
+      "bytes": 239297,
+      "sha1": "03501a2430683252ec1c809d69f6865f54105a76"
     },
     "market-busan.json": {
       "bytes": 3221,
@@ -28,7 +28,7 @@
     },
     "dict-monthly.json": {
       "bytes": 20530,
-      "sha1": "a75b1d6dc1900553c73d0bcbfaacccec88c947f4"
+      "sha1": "5280c07212d9d66a6493ba6c673d9ee36fb6c3d0"
     }
   }
 }
