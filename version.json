@@ -1,18 +1,18 @@
 {
-  "version": "2026-11-04",
-  "updatedAt": "2026-11-04T01:04:31.976Z",
+  "version": "2026-11-05",
+  "updatedAt": "2026-11-05T01:20:06.263Z",
   "files": {
     "market-daily.json": {
-      "bytes": 239451,
-      "sha1": "7284109194d598c093c0eefddf331abfe89bd69d"
+      "bytes": 239449,
+      "sha1": "d68367da9243919c8a158eef664ae3a01446c7d6"
     },
     "market-busan.json": {
       "bytes": 3221,
       "sha1": "546b920b6b8c34d55399a8c3f20c60fae34ee258"
     },
     "seasonal.json": {
-      "bytes": 201940,
-      "sha1": "7ef0429f376f3f27e02a15e94d91c5c10644a4c2"
+      "bytes": 198958,
+      "sha1": "59f18ed043262fed2fedc04cac746cbf23db4aa3"
     },
     "wipan-daily.json": {
       "bytes": 264416,
