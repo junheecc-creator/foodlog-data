@@ -1,10 +1,10 @@
 {
-  "version": "2026-11-09",
-  "updatedAt": "2026-11-09T00:36:16.422Z",
+  "version": "2026-11-10",
+  "updatedAt": "2026-11-10T03:14:30.689Z",
   "files": {
     "market-daily.json": {
-      "bytes": 239635,
-      "sha1": "662b9f79f7c010347abccee2eb56d72fe40ddec5"
+      "bytes": 239680,
+      "sha1": "a09be60798471e1505f3aacf68fbc72f5ae0bdca"
     },
     "market-busan.json": {
       "bytes": 3221,
